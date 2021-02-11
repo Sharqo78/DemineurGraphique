@@ -77,16 +77,16 @@ int main(int argc, char*argv[]) {
 			WINDOW_HEIGHT,
 			0);
 	if(pWindow==NULL){
-		fprintf(stderr, "Erreur, fenêtre non initialisée : %s\n", SDL_GetError());
+		fprintf(stderr, "Unable to initialize SDL Window: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
 	}
 
 	pRenderer=SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_PRESENTVSYNC);
 	if(pRenderer==NULL){
-			fprintf(stderr,"Erreur, renderer matériel non initialisé : %s\n", SDL_GetError());
+			fprintf(stderr,"Unable to initialize hardware renderer : %s\n", SDL_GetError());
 			pRenderer=SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_SOFTWARE);
 			if(pRenderer==NULL){
-				fprintf(stderr,"Erreur, renderer software non initialisé: %s\n",SDL_GetError());
+				fprintf(stderr,"Unable to initialize software renderer: %s\n",SDL_GetError());
 				return EXIT_FAILURE;
 			}
 		}
@@ -102,7 +102,7 @@ int main(int argc, char*argv[]) {
 			case SDL_MOUSEMOTION:
 				break;
 			case SDL_MOUSEBUTTONUP:
-				sprintf(buf," Coordonnées de la souris - X:%03d Y:%03d", pEvent.button.x, pEvent.button.y);
+				sprintf(buf,"Mouse cursor coordinates - X:%03d Y:%03d", pEvent.button.x, pEvent.button.y);
 				SDL_SetWindowTitle(pWindow, buf);
 				AppMouseButtonUp(&pEvent, &nStatus);
 				AppDraw(pRenderer, &nStatus);
