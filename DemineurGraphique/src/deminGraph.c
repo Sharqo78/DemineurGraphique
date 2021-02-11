@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : SDLTest.c
+ Name        : deminGraph.c
  Author      : EL BAKRAOUI Salim
  Version     : 0.1preAlpha
  Copyright   : Y'en a aucun sers-toi mon pote
- Description : Test et experimentations avec SDL
+ Description : portage de notre demineur en terminal vers un demineur graphique
  ============================================================================
  */
 
