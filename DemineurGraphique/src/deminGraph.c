@@ -4,7 +4,7 @@
  Author      : EL BAKRAOUI Salim
  Version     : 0.1preAlpha
  Copyright   : Y'en a aucun sers-toi mon pote
- Description : Test et expérimentations avec SDL
+ Description : Test et experimentations avec SDL
  ============================================================================
  */
 
