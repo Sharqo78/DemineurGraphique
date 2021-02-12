@@ -70,7 +70,7 @@ int main(int argc, char*argv[]) {
 	char buf[256];
 
 	pWindow=SDL_CreateWindow(
-			"SDLTest.c",
+			"\"deminGraph.c\"",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			WINDOW_WIDTH,
