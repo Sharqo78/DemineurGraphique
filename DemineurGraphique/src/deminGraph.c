@@ -2,9 +2,9 @@
  ============================================================================
  Name        : deminGraph.c
  Author      : EL BAKRAOUI Salim
- Version     : 0.2prePrePreAlpha
+ Version     : 0.2prePrePreAlphaAlpha
  Copyright   : Y'en a aucun sers-toi mon pote
- Description : portage de notre demineur en terminal vers un demineur graphique
+ Description : Portage de notre demineur en terminal vers un demineur graphique
  ============================================================================
  */
 
