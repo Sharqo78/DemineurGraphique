@@ -93,9 +93,12 @@ int main(int argc, char*argv[]) {
 
 	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(pRenderer);
-	SDL_Delay(300);
+	SDL_Delay(100);
 	SDL_RenderPresent(pRenderer);
+	SDL_Delay(100);
 	AppDraw(pRenderer,&nStatus);
+	SDL_Delay(100);
+	SDL_RenderPresent(pRenderer);
 
 	while(run){
 		while(SDL_PollEvent(&pEvent)){
