@@ -95,6 +95,7 @@ int main(int argc, char*argv[]) {
 	SDL_RenderClear(pRenderer);
 	SDL_Delay(300);
 	SDL_RenderPresent(pRenderer);
+	AppDraw(pRenderer,&nStatus);
 
 	while(run){
 		while(SDL_PollEvent(&pEvent)){
@@ -193,22 +194,22 @@ void AppDraw(SDL_Renderer*pRenderer, int*pStatus){
 	SDL_Rect rect={0,0,RECT_WIDTH,RECT_HEIGHT};
 	rect.x = RECT_A_X ;
 	rect.y = RECT_A_Y;
-	if(mIsRectAColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 155, 0, 255, 255);
+	if(mIsRectAColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
 	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 	rect.x = RECT_B_X ;
 	rect.y = RECT_B_Y;
-	if(mIsRectBColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 155, 0, 255, 255);
+	if(mIsRectBColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer,0 , 255, 155, 255);
 	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 	rect.x = RECT_C_X ;
 	rect.y = RECT_C_Y;
-	if(mIsRectCColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 155, 0, 255, 255);
+	if(mIsRectCColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
 	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 	rect.x = RECT_D_X ;
 	rect.y = RECT_D_Y;
-	if(mIsRectDColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 155, 0, 255, 255);
+	if(mIsRectDColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
 	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 
