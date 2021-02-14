@@ -4,3 +4,4 @@ Release/
 .project
 language.settings.xml
 .settings/
+.vscode/

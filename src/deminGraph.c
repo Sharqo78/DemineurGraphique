@@ -1,11 +1,11 @@
 /*
- ============================================================================
+ ================================================================================
  Name        : deminGraph.c
  Author      : EL BAKRAOUI Salim
  Version     : 0.2prePrePreAlphaAlpha
  Copyright   : Y'en a aucun sers-toi mon pote
  Description : Portage de notre demineur en terminal vers un demineur graphique
- ============================================================================
+ ================================================================================
  */
 
 #include <stdio.h>
@@ -198,22 +198,22 @@ void AppDraw(SDL_Renderer*pRenderer, int*pStatus){
 	rect.x = RECT_A_X ;
 	rect.y = RECT_A_Y;
 	if(mIsRectAColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
-	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
+	else SDL_SetRenderDrawColor(pRenderer, 96, 116, 189, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 	rect.x = RECT_B_X ;
 	rect.y = RECT_B_Y;
 	if(mIsRectBColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer,0 , 255, 155, 255);
-	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
+	else SDL_SetRenderDrawColor(pRenderer, 96, 116, 189, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 	rect.x = RECT_C_X ;
 	rect.y = RECT_C_Y;
 	if(mIsRectCColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
-	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
+	else SDL_SetRenderDrawColor(pRenderer, 96, 116, 189, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 	rect.x = RECT_D_X ;
 	rect.y = RECT_D_Y;
 	if(mIsRectDColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
-	else SDL_SetRenderDrawColor(pRenderer, 0, 155, 255, 255);
+	else SDL_SetRenderDrawColor(pRenderer, 96, 116, 189, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
 
 	SDL_RenderPresent(pRenderer);
