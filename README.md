@@ -1,3 +1,8 @@
-# DEMINEUR GRAPHIQUE
+# Démineur graphique
 
+
+## Introduction
+C'est un projet de classe.
+
+## Détails
 J'ai pas grand chose à dire mais en gros on avait fait un démineur dans le terminal et là on doit l'adapter pour qu'il fonctionne de manière graphique sur SDL2.
