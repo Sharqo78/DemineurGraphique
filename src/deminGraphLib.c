@@ -1,9 +1,11 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "defines.h"
 #include "deminGraphLib.h"
+
 
 void AppMouseButtonUp(SDL_Event*event, int*pStatus){
 	int xM, yM;
@@ -72,21 +74,31 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
     int x,y;
     int nbMines = (nRow*nCol*nPercent)/100;
 
+    //Mise de toutes les valeurs à 0
+    for(k=0;k<(nCol*nRow);k++)pS[k]=0;
+    
+    //pS[0]=CELL_MINE;
+    //pS[nCol-1]=CELL_MINE;
+    //pS[nCol*(nRow-1)]=CELL_MINE;
+    //pS[nCol*nRow-1]=CELL_MINE;
+
+    //Insertion des mines ainsi que des valeurs adjacentes permettant de détecter les mines
     do{
         k=rand()%nRow;
         m=rand()%nCol;
-        pS[k+m*nRow]==CELL_MINE;
+        pS[k+m*nRow]=CELL_MINE;
         for(x=-1;x<=1;x++){
             for(y=-1;y<=1;y++){
-                if(((k+x)>=0) && 
-                ((m+y)>=0) && 
-                ((k+x)<nRow) && 
-                ((m+y)<nCol) && 
-                (pS[k+x+((m+y)*nRow)]!=CELL_MINE))pS[k+x+((m+y)*nRow)]++;
+                if(
+                (k+x>=0) && 
+                (k+x<nRow) && 
+                (m+y>=0) &&
+                (m+y<nCol) && 
+                (pS[k+x+((m+y)*nRow)]!=CELL_MINE)) pS[k+x+((m+y)*nRow)]++;
+                }
             }
-        }
-
     }while(--nbMines);
+
 }
 
 void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mode){
@@ -94,18 +106,30 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
     int k,m;
     r.w = SCENE_CELL_SIZE;
     r.h = SCENE_CELL_SIZE;
+    r.x=PADDING_HRZ;
+    r.y=PADDING_TOP;
+	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
     if(mode){
-        r.x=PADDING_HRZ;
-        r.y=PADDING_TOP;
-        SDL_SetRenderDrawColor(pRenderer, 255,0,0,255);
-        for(k=0;k<nRow*nCol;k++){
-            SDL_RenderFillRect(pRenderer, &r);
-            r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
-            if( (k) && ((k+1)%nCol==0)){
-                r.y+=SCENE_CELL_SIZE+SCENE_CELL_SPACING;
-                r.x=PADDING_HRZ;
-            }
-        }
+        for(k=0;k<nRow;k++){
+			for(m=0;m<nCol;m++){
+				if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
+					SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);
+					SDL_RenderFillRect(pRenderer, &r);
+				}
+				else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
+					SDL_SetRenderDrawColor(pRenderer, 64, 69, 82, 255);
+					SDL_RenderFillRect(pRenderer, &r);
+				}
+				else{
+					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, pS[k+m*nRow]*26);
+					SDL_RenderFillRect(pRenderer, &r);
+				}
+				r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
+			}
+			r.x=PADDING_HRZ;
+			r.y+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
+
+    	}
     }
     else{
 

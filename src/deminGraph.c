@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <time.h>
 
 #include "defines.h"
 #include "deminGraphLib.h"
@@ -49,16 +50,18 @@ int main(int argc, char*argv[]) {
 				return EXIT_FAILURE;
 			}
 		}
-	
+	srand((unsigned int)time(NULL));
+
 	pScene = (int*)malloc(SCENE_NB_ROW*SCENE_NB_COL*sizeof(int));
 	DeminSceneInit(pScene, SCENE_NB_ROW, SCENE_NB_COL, SCENE_NB_PERCENT);
 
-	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
+	SDL_SetRenderDrawColor(pRenderer, 56, 60, 74, 255);
 	SDL_RenderClear(pRenderer);
+
 	DeminSceneDraw(pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
-	SDL_Delay(100);
+	SDL_Delay(15);
+
 	SDL_RenderPresent(pRenderer);
-	printf("%d\n", WINDOW_WIDTH);
 
 	while(run){
 		while(SDL_PollEvent(&pEvent)){

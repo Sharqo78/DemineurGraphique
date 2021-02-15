@@ -6,22 +6,25 @@
 #define mIsBitSet(f,m)	(((f)&(m))==(m))
 #define mIsBitClr(f,m)	(((~f)&(m)==(m))
 
-#define SCENE_NB_ROW        (15)
-#define SCENE_NB_COL        (30)
-#define SCENE_NB_PERCENT    (5)
+#define WINDOW_WIDTH    ( (2*PADDING_HRZ) + (SCENE_CELL_SPACING * (SCENE_NB_COL-1) ) + (SCENE_CELL_SIZE * SCENE_NB_COL) )
+#define WINDOW_HEIGHT   ( PADDING_TOP + PADDING_BOTTOM + (SCENE_CELL_SPACING * (SCENE_NB_ROW-1) ) + (SCENE_CELL_SIZE * SCENE_NB_ROW) )
+
+#define SCENE_NB_ROW        (9)
+#define SCENE_NB_COL        (16)
+#define SCENE_NB_PERCENT    (10)
 
 #define CELL_MINE           (9)
 #define CELL_VOID           (0)
 
-#define PADDING_TOP             (50)
-#define PADDING_BOTTOM          (30)
-#define PADDING_HRZ             (12)
+#define PADDING_TOP             (48)
+#define PADDING_BOTTOM          (16)
+#define PADDING_HRZ             (16)
 
-#define SCENE_CELL_SPACING      (10)
-#define SCENE_CELL_SIZE         (32)
+#define SCENE_CELL_SPACING      (5)
+#define SCENE_CELL_SIZE         (24)
 
-#define WINDOW_WIDTH    ( (2*PADDING_HRZ) + (SCENE_CELL_SPACING * (SCENE_NB_COL-1) ) + (SCENE_CELL_SIZE * SCENE_NB_COL) )
-#define WINDOW_HEIGHT   ( PADDING_TOP + PADDING_BOTTOM + (SCENE_CELL_SPACING * (SCENE_NB_ROW-1) ) + (SCENE_CELL_SIZE * SCENE_NB_ROW) )
+#define cellValueMask       (0xFF)
+#define mCellValue(c)       mBitsMsk(c, cellValueMask)
 
 #define RECT_A_TOGGLE_MASK	(0x00000001)
 #define RECT_B_TOGGLE_MASK	(0x00000002)
