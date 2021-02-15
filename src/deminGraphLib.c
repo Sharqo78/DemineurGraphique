@@ -1,6 +1,9 @@
+#include <SDL2/SDL.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "defines.h"
 #include "deminGraphLib.h"
-#include <SDL2/SDL.h>
 
 void AppMouseButtonUp(SDL_Event*event, int*pStatus){
 	int xM, yM;
@@ -86,6 +89,26 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
     }while(--nbMines);
 }
 
-void DeminSceneDraw(int *pS, int nRow, int nCol, int mode){
-    
+void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mode){
+    SDL_Rect r = {};
+    int k,m;
+    r.w = SCENE_CELL_SIZE;
+    r.h = SCENE_CELL_SIZE;
+    if(mode){
+        r.x=PADDING_HRZ;
+        r.y=PADDING_TOP;
+        SDL_SetRenderDrawColor(pRenderer, 255,0,0,255);
+        for(k=0;k<nRow*nCol;k++){
+            SDL_RenderFillRect(pRenderer, &r);
+            r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
+            if( (k) && ((k+1)%nCol==0)){
+                r.y+=SCENE_CELL_SIZE+SCENE_CELL_SPACING;
+                r.x=PADDING_HRZ;
+            }
+        }
+    }
+    else{
+
+    }
+    SDL_RenderPresent(pRenderer);
 }

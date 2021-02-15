@@ -25,7 +25,7 @@ int main(int argc, char*argv[]) {
 
 	int run = 1;
 	int nStatus = 0;
-
+	int *pScene;
 	char buf[256];
 
 	pWindow=SDL_CreateWindow(
@@ -49,15 +49,16 @@ int main(int argc, char*argv[]) {
 				return EXIT_FAILURE;
 			}
 		}
+	
+	pScene = (int*)malloc(SCENE_NB_ROW*SCENE_NB_COL*sizeof(int));
+	DeminSceneInit(pScene, SCENE_NB_ROW, SCENE_NB_COL, SCENE_NB_PERCENT);
 
 	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(pRenderer);
+	DeminSceneDraw(pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
 	SDL_Delay(100);
 	SDL_RenderPresent(pRenderer);
-	SDL_Delay(100);
-	AppDraw(pRenderer,&nStatus);
-	SDL_Delay(100);
-	SDL_RenderPresent(pRenderer);
+	printf("%d\n", WINDOW_WIDTH);
 
 	while(run){
 		while(SDL_PollEvent(&pEvent)){
@@ -67,8 +68,8 @@ int main(int argc, char*argv[]) {
 			case SDL_MOUSEBUTTONUP:
 				sprintf(buf,"Mouse cursor coordinates - X:%03d Y:%03d", pEvent.button.x, pEvent.button.y);
 				SDL_SetWindowTitle(pWindow, buf);
-				AppMouseButtonUp(&pEvent, &nStatus);
-				AppDraw(pRenderer, &nStatus);
+				//AppMouseButtonUp(&pEvent, &nStatus);
+				//AppDraw(pRenderer, &nStatus);
 				break;
 			case SDL_WINDOWEVENT:
 				switch(pEvent.window.event){
@@ -94,7 +95,7 @@ int main(int argc, char*argv[]) {
 					run=0;
 					break;
 				case SDLK_SPACE:
-					AppDraw(pRenderer, &nStatus);
+					//AppDraw(pRenderer, &nStatus);
 				break;
 				default:
 					break;
@@ -106,7 +107,8 @@ int main(int argc, char*argv[]) {
 		}
 	}
 
-
+		free(pScene);
+		pScene=NULL;
 		SDL_DestroyRenderer(pRenderer);
 		SDL_DestroyWindow(pWindow);
 		SDL_Quit();

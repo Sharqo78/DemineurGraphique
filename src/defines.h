@@ -6,8 +6,22 @@
 #define mIsBitSet(f,m)	(((f)&(m))==(m))
 #define mIsBitClr(f,m)	(((~f)&(m)==(m))
 
-#define CELL_MINE           9
-#define CELL_VOID           0
+#define SCENE_NB_ROW        (15)
+#define SCENE_NB_COL        (30)
+#define SCENE_NB_PERCENT    (5)
+
+#define CELL_MINE           (9)
+#define CELL_VOID           (0)
+
+#define PADDING_TOP             (50)
+#define PADDING_BOTTOM          (30)
+#define PADDING_HRZ             (12)
+
+#define SCENE_CELL_SPACING      (10)
+#define SCENE_CELL_SIZE         (32)
+
+#define WINDOW_WIDTH    ( (2*PADDING_HRZ) + (SCENE_CELL_SPACING * (SCENE_NB_COL-1) ) + (SCENE_CELL_SIZE * SCENE_NB_COL) )
+#define WINDOW_HEIGHT   ( PADDING_TOP + PADDING_BOTTOM + (SCENE_CELL_SPACING * (SCENE_NB_ROW-1) ) + (SCENE_CELL_SIZE * SCENE_NB_ROW) )
 
 #define RECT_A_TOGGLE_MASK	(0x00000001)
 #define RECT_B_TOGGLE_MASK	(0x00000002)
@@ -41,5 +55,5 @@
 #define	RECT_D_X	(RECT_A_Y+RECT_WIDTH+RECT_SPACING)
 #define	RECT_D_Y	(RECT_A_Y+RECT_HEIGHT+RECT_SPACING)
 
-#define WINDOW_WIDTH	(3*RECT_SPACING+2*RECT_WIDTH)
-#define WINDOW_HEIGHT	(3*RECT_SPACING+2*RECT_HEIGHT)
+#define TESTING_WINDOW_WIDTH	(3*RECT_SPACING+2*RECT_WIDTH)
+#define TESTING_WINDOW_HEIGHT	(3*RECT_SPACING+2*RECT_HEIGHT)
