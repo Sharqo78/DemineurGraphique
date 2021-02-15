@@ -6,6 +6,9 @@
 #define mIsBitSet(f,m)	(((f)&(m))==(m))
 #define mIsBitClr(f,m)	(((~f)&(m)==(m))
 
+#define CELL_MINE           9
+#define CELL_VOID           0
+
 #define RECT_A_TOGGLE_MASK	(0x00000001)
 #define RECT_B_TOGGLE_MASK	(0x00000002)
 #define RECT_C_TOGGLE_MASK	(0x00000004)

@@ -111,6 +111,6 @@ int main(int argc, char*argv[]) {
 		SDL_DestroyWindow(pWindow);
 		SDL_Quit();
 		return EXIT_SUCCESS;
-	}
+}
 
 

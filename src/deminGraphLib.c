@@ -61,8 +61,27 @@ void AppDraw(SDL_Renderer*pRenderer, int*pStatus){
 	if(mIsRectDColOn(*pStatus))SDL_SetRenderDrawColor(pRenderer, 0, 255, 155, 255);
 	else SDL_SetRenderDrawColor(pRenderer, 96, 116, 189, 255);
 	SDL_RenderFillRect(pRenderer, &rect);
-
 	SDL_RenderPresent(pRenderer);
-
 }
 
+void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
+    int k,m;
+    int x,y;
+    int nbMines = (nRow*nCol*nPercent)/100;
+
+    do{
+        k=rand()%nRow;
+        m=rand()%nCol;
+        pS[k+m*nRow]==CELL_MINE;
+        for(x=-1;x<=1;x++){
+            for(y=-1;y<=1;y++){
+                if(((k+x)>=0) && 
+                ((m+y)>=0) && 
+                ((k+x)<nRow) && 
+                ((m+y)<nCol) && 
+                (pS[k+x+((m+y)*nRow)]!=CELL_MINE))pS[k+x+((m+y)*nRow)]++;
+            }
+        }
+
+    }while(--nbMines);
+}
