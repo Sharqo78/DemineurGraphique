@@ -85,3 +85,7 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
 
     }while(--nbMines);
 }
+
+void DeminSceneDraw(int *pS, int nRow, int nCol, int mode){
+    
+}
