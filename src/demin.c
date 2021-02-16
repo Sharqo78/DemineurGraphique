@@ -45,10 +45,12 @@ int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
     //Si la cellule n'est pas une mine mais qu'elle n'est pas nulle,
     //on retourne 1, car on aura découvert qu'une case
     if((mCellValue(pS[x+(y*nRow)])!=CELL_VOID))return 1;
+	if (mCellValue(pS[x+(y*nRow)])==CELL_VOID)cnt++;
     for(k=-1;k<=1;k++){
 	    for(m=-1;m<=1;m++){
 	      if(((k+x)>=0) && ((m+y)>=0) && ((k+x)<nRow) && ((m+y)<nCol)){
 		      cnt+=DiscoverCell(pS,x+k,y+m, nRow, nCol);
+
 	       }
 	     }
     }

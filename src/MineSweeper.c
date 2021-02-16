@@ -33,7 +33,7 @@ int main(int argc, char*argv[]) {
 	char buf[256];
 	int* pCoord;
 	int iDisCell;
-
+	int nbMines = (SCENE_NB_COL*SCENE_NB_PERCENT*SCENE_NB_ROW)/100;
 	SDL_Init(SDL_INIT_VIDEO);
 
 	app.pWindow=SDL_CreateWindow(
@@ -60,9 +60,11 @@ int main(int argc, char*argv[]) {
 		}
 	srand((unsigned int)time(NULL));
 
+	//Initiation de la scène de jeu
 	pScene = (int*)malloc(SCENE_NB_ROW*SCENE_NB_COL*sizeof(int));
 	DeminSceneInit(pScene, SCENE_NB_ROW, SCENE_NB_COL, SCENE_NB_PERCENT);
 
+	//Dessin de la scène de jeu.
 	DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
 	SDL_Delay(15);
 
@@ -77,7 +79,9 @@ int main(int argc, char*argv[]) {
 				pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
 				iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
 				if(iDisCell == GAME_OVER_VALUE){
-					app.iQuit=0;
+					 DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
+					 SDL_Delay(5000);
+					 app.iQuit=0;
 				}
 				sprintf(buf,"Clicked cell coordinates - Ligne: %03d Colonne: %03d - Cases découvertes %d", pCoord[0], pCoord[1], iDisCell);
 				SDL_SetWindowTitle(app.pWindow, buf);

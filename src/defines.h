@@ -12,8 +12,8 @@
 #define PLAYFIELD_WIDTH     ( (WINDOW_WIDTH)-(2*PADDING_HRZ) )
 #define PLAYFIELD_HEIGHT    ( (WINDOW_HEIGHT)-(PADDING_TOP)-(PADDING_BOTTOM) )
 
-#define SCENE_NB_ROW        (15)
-#define SCENE_NB_COL        (20)
+#define SCENE_NB_ROW        (10)
+#define SCENE_NB_COL        (10)
 #define SCENE_NB_PERCENT    (5)
 
 #define CELL_MINE           (9)
@@ -24,7 +24,7 @@
 #define PADDING_HRZ             (16)
 
 #define SCENE_CELL_SPACING      (6)
-#define SCENE_CELL_SIZE         (32)
+#define SCENE_CELL_SIZE         (48)
 
 #define GAME_OVER_VALUE         (-5)
 
