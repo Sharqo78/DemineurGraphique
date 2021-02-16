@@ -11,10 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <time.h>
 
 #include "defines.h"
-#include "deminGraphLib.h"
+#include "demin.h"
 
 
 int main(int argc, char*argv[]) {
@@ -30,7 +31,7 @@ int main(int argc, char*argv[]) {
 	char buf[256];
 
 	pWindow=SDL_CreateWindow(
-			"\"deminGraph.c\"",
+			"MineSweeper",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			WINDOW_WIDTH,

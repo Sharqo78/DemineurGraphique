@@ -1,10 +1,11 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 #include "defines.h"
-#include "deminGraphLib.h"
+#include "demin.h"
 
 
 void AppMouseButtonUp(SDL_Event*event, int*pStatus){
@@ -69,6 +70,7 @@ void AppDraw(SDL_Renderer*pRenderer, int*pStatus){
 	SDL_RenderPresent(pRenderer);
 }
 
+//Cette fonction sert à initier le tableau de jeu en mémoire 
 void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
     int k,m;
     int x,y;
@@ -76,12 +78,6 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
 
     //Mise de toutes les valeurs à 0
     for(k=0;k<(nCol*nRow);k++)pS[k]=0;
-    
-    //pS[0]=CELL_MINE;
-    //pS[nCol-1]=CELL_MINE;
-    //pS[nCol*(nRow-1)]=CELL_MINE;
-    //pS[nCol*nRow-1]=CELL_MINE;
-
     //Insertion des mines ainsi que des valeurs adjacentes permettant de détecter les mines
     do{
         k=rand()%nRow;
@@ -101,6 +97,7 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
 
 }
 
+//Cette fonction sert à tracer la scène de jeu.
 void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mode){
     SDL_Rect r = {};
     int k,m;
@@ -113,7 +110,7 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
         for(k=0;k<nRow;k++){
 			for(m=0;m<nCol;m++){
 				if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
-					SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);
+					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
 					SDL_RenderFillRect(pRenderer, &r);
 				}
 				else if(mCellValue(pS[k+m*nRow])==CELL_VOID){

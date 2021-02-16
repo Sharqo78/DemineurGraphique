@@ -10,8 +10,8 @@
 #define WINDOW_HEIGHT   ( PADDING_TOP + PADDING_BOTTOM + (SCENE_CELL_SPACING * (SCENE_NB_ROW-1) ) + (SCENE_CELL_SIZE * SCENE_NB_ROW) )
 
 #define SCENE_NB_ROW        (9)
-#define SCENE_NB_COL        (16)
-#define SCENE_NB_PERCENT    (10)
+#define SCENE_NB_COL        (20)
+#define SCENE_NB_PERCENT    (5)
 
 #define CELL_MINE           (9)
 #define CELL_VOID           (0)
@@ -20,8 +20,8 @@
 #define PADDING_BOTTOM          (16)
 #define PADDING_HRZ             (16)
 
-#define SCENE_CELL_SPACING      (5)
-#define SCENE_CELL_SIZE         (24)
+#define SCENE_CELL_SPACING      (6)
+#define SCENE_CELL_SIZE         (32)
 
 #define cellValueMask       (0xFF)
 #define mCellValue(c)       mBitsMsk(c, cellValueMask)
