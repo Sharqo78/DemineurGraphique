@@ -45,14 +45,6 @@ int main(int argc, char*argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	/*app.pFont = TTF_OpenFont("arial.ttf", SCENE_CELL_SIZE);
-
-	if(app.pFont == NULL){
-		printf("TTF font initialization failed %s\n", TTF_GetError());
-		TTF_Quit();
-		SDL_Quit();
-		exit(EXIT_FAILURE);
-	}*/
 
 	app.pWindow=SDL_CreateWindow(
 			"MineSweeper",
@@ -76,13 +68,26 @@ int main(int argc, char*argv[]) {
 				return EXIT_FAILURE;
 			}
 		}
+	
+	//Initialisation et affectation de la police d'écriture
+	//La condition prévoit de fermer le programme en cas d'erreur.
+	TTF_Init();
+	app.pFont = TTF_OpenFont("/home/salim/git/DemineurGraphique/Debug/arial.ttf", SCENE_CELL_SIZE);
+
+	if(app.pFont == NULL){
+		printf("TTF_Openfont() : %s\n", TTF_GetError());
+		TTF_Quit();
+		SDL_Quit();
+		exit(EXIT_FAILURE);
+	}
+
 	srand((unsigned int)time(NULL));
 
 	//Initiation de la scène de jeu
-	pScene = (int*)malloc(SCENE_NB_ROW*SCENE_NB_COL*sizeof(int));
+	pScene = (int*)malloc((SCENE_NB_ROW*SCENE_NB_COL+1)*sizeof(int));
 	DeminSceneInit(pScene, SCENE_NB_ROW, SCENE_NB_COL, SCENE_NB_PERCENT);
 
-	//Dessin de la scène de jeu.
+	//Traçage de la scène de jeu.
 	DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
 	SDL_Delay(15);
 
@@ -103,7 +108,7 @@ int main(int argc, char*argv[]) {
 				//Procédure en cas de "Game Over"
 				if(iDisCell == GAME_OVER_VALUE){
 					 DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
-					 /*app.colorText.r = 255;
+					 app.colorText.r = 255;
 					 app.colorText.g = 255;
 					 app.colorText.b = 255;
 					 app.colorText.a = 255;
@@ -119,10 +124,32 @@ int main(int argc, char*argv[]) {
 					 SDL_DestroyTexture(app.pTexture);
 					 SDL_FreeSurface(app.pSurface);
 
-					 SDL_RenderPresent(app.pRenderer);*/
+					 SDL_RenderPresent(app.pRenderer);
 
 					 SDL_Delay(2500);
 					 app.iQuit=0;
+				}
+				else if (iTotalDisCell==(SCENE_NB_COL*SCENE_NB_ROW)-nbMines){
+					app.colorText.r = 255;
+					app.colorText.g = 255;
+					app.colorText.b = 255;
+					app.colorText.a = 255;
+					app.pSurface = TTF_RenderText_Blended(app.pFont, "You WIN", app.colorText);
+					app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
+					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0);
+					app.surfaceRect.w = WINDOW_WIDTH;
+					app.surfaceRect.x = 0;
+					app.surfaceRect.h = SCENE_CELL_SIZE;
+					app.surfaceRect.y = WINDOW_HEIGHT/2;
+					
+					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
+					SDL_DestroyTexture(app.pTexture);
+					SDL_FreeSurface(app.pSurface);
+
+					SDL_RenderPresent(app.pRenderer);
+
+					SDL_Delay(2500);
+					app.iQuit=0;
 				}
 				//AppDraw(pRenderer, &nStatus);
 				break;

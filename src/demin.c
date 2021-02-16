@@ -30,6 +30,12 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 			free(pCoord);
 			pCoord=NULL;
 	}
+	else{
+		pCoord[0]=SCENE_NB_COL*SCENE_NB_ROW+1;
+		return pCoord;
+		free(pCoord);
+		pCoord=NULL;
+	}
 }
 
 ///
