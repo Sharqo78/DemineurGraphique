@@ -2,7 +2,4 @@
 
 
 ## Introduction
-C'est un projet de classe.
-
-## Détails
-J'ai pas grand chose à dire mais en gros on avait fait un démineur dans le terminal et là on doit l'adapter pour qu'il fonctionne de manière graphique sur SDL2.
+C'est un projet de classe devant être réalisé en C utilisant la bibliothèque SDL2 ainsi que son extension, `SDL_ttf`

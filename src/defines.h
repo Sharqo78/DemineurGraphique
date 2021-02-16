@@ -9,7 +9,10 @@
 #define WINDOW_WIDTH    ( (2*PADDING_HRZ) + (SCENE_CELL_SPACING * (SCENE_NB_COL-1) ) + (SCENE_CELL_SIZE * SCENE_NB_COL) )
 #define WINDOW_HEIGHT   ( PADDING_TOP + PADDING_BOTTOM + (SCENE_CELL_SPACING * (SCENE_NB_ROW-1) ) + (SCENE_CELL_SIZE * SCENE_NB_ROW) )
 
-#define SCENE_NB_ROW        (9)
+#define PLAYFIELD_WIDTH     ( (WINDOW_WIDTH)-(2*PADDING_HRZ) )
+#define PLAYFIELD_HEIGHT    ( (WINDOW_HEIGHT)-(PADDING_TOP)-(PADDING_BOTTOM) )
+
+#define SCENE_NB_ROW        (15)
 #define SCENE_NB_COL        (20)
 #define SCENE_NB_PERCENT    (5)
 
@@ -23,8 +26,15 @@
 #define SCENE_CELL_SPACING      (6)
 #define SCENE_CELL_SIZE         (32)
 
+#define GAME_OVER_VALUE         (-5)
+
+
 #define cellValueMask       (0xFF)
+#define playedMask          (0x80000000)
+
 #define mCellValue(c)       mBitsMsk(c, cellValueMask)
+#define mIsPlayed(c)        mIsBitSet(c,playedMask)
+#define mSetPlayed(c)       mBitsSet(c, playedMask)
 
 #define RECT_A_TOGGLE_MASK	(0x00000001)
 #define RECT_B_TOGGLE_MASK	(0x00000002)

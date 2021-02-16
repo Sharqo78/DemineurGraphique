@@ -7,44 +7,55 @@
 #include "defines.h"
 #include "demin.h"
 
-
-void AppMouseButtonUp(SDL_Event*event, int*pStatus){
+//Cette fonction gère les coordonnées des cases
+//Elle prend l'évènement pour interpréter les clics de souris et repère l'endroit du clic
+//Elle retourne un tableau de pointeurs contenant les coordonnés X et Y des cases
+int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
+	int *pCoord;
 	int xM, yM;
-	xM = event->button.x;
-	yM = event->button.y;
-	//Rect A----------
-	if((xM>=RECT_A_X)&&
-	   (xM<RECT_A_X+RECT_WIDTH)&&
-	   (yM>=RECT_A_Y)&&
-	   (yM<RECT_A_Y+RECT_HEIGHT)){
-		mRectATgl(*pStatus);
-		return;
+	int cellRow, cellCol;
+
+	pCoord = (int*)malloc(2*sizeof(int));
+	xM = (event->button.x-PADDING_HRZ);
+	yM = (event->button.y-PADDING_TOP);
+
+	cellCol = xM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
+	cellRow = yM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
+
+	if(xM>0 && yM>0 && yM<PLAYFIELD_HEIGHT && xM<PLAYFIELD_WIDTH){
+		mSetPlayed(pS[cellRow+cellCol*nRow]);
 	}
-	//Rect B----------
-	if((xM>=RECT_B_X)&&
-	   (xM<RECT_B_X+RECT_WIDTH)&&
-	   (yM>=RECT_B_Y)&&
-	   (yM<RECT_B_Y+RECT_HEIGHT)){
-		mRectBTgl(*pStatus);
-		return;
-	}
-	//Rect C----------
-	if((xM>=RECT_C_X)&&
-	   (xM<RECT_C_X+RECT_WIDTH)&&
-	   (yM>=RECT_C_Y)&&
-	   (yM<RECT_C_Y+RECT_HEIGHT)){
-		mRectCTgl(*pStatus);
-		return;
-	}
-	//Rect D----------
-	if((xM>=RECT_D_X)&&
-	   (xM<RECT_D_X+RECT_WIDTH)&&
-	   (yM>=RECT_D_Y)&&
-	   (yM<RECT_D_Y+RECT_HEIGHT)){
-		mRectDTgl(*pStatus);
-		return;
-	}
+
+	pCoord[0]=cellRow;
+	pCoord[1]=cellCol;
+	return pCoord;
+	free(pCoord);
+	pCoord=NULL;
 }
+
+///
+int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
+	int k,m;
+	int cnt;
+    //Si la cellule a déjà été jouée, on retourne 0
+    if(mIsPlayed(pS[x+(y*nRow)]))return 0;
+    mSetPlayed(pS[x+(y*nRow)]);
+    //Si la celllule est une mine, on² retourne -1 (partie terminée)
+    if((mCellValue(pS[x+(y*nRow)])==CELL_MINE))return GAME_OVER_VALUE;
+    //Si la cellule n'est pas une mine mais qu'elle n'est pas nulle,
+    //on retourne 1, car on aura découvert qu'une case
+    if((mCellValue(pS[x+(y*nRow)])!=CELL_VOID))return 1;
+    for(k=-1;k<=1;k++){
+	    for(m=-1;m<=1;m++){
+	      if(((k+x)>=0) && ((m+y)>=0) && ((k+x)<nRow) && ((m+y)<nCol)){
+		      cnt+=DiscoverCell(pS,x+k,y+m, nRow, nCol);
+	       }
+	     }
+    }
+    return x;
+
+}
+
 void AppDraw(SDL_Renderer*pRenderer, int*pStatus){
 	SDL_Rect rect={0,0,RECT_WIDTH,RECT_HEIGHT};
 	rect.x = RECT_A_X ;
@@ -98,6 +109,8 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
 }
 
 //Cette fonction sert à tracer la scène de jeu.
+//mode 1 = mode de jeu
+//mode 0 = mode découvert
 void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mode){
     SDL_Rect r = {};
     int k,m;
@@ -105,9 +118,40 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
     r.h = SCENE_CELL_SIZE;
     r.x=PADDING_HRZ;
     r.y=PADDING_TOP;
+	SDL_SetRenderDrawColor(pRenderer, 56, 60, 74, 255);
+	SDL_RenderClear(pRenderer);
 	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
     if(mode){
         for(k=0;k<nRow;k++){
+			for(m=0;m<nCol;m++){
+				if(mIsPlayed(pS[k+m*nRow])){
+					if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
+						SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
+						SDL_RenderFillRect(pRenderer, &r);
+					}
+					else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
+						SDL_SetRenderDrawColor(pRenderer, 64, 69, 82, 255);
+						SDL_RenderFillRect(pRenderer, &r);
+					}
+					else{
+						SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, pS[k+m*nRow]*26);
+						SDL_RenderFillRect(pRenderer, &r);
+					}
+				}
+				else{
+					SDL_SetRenderDrawColor(pRenderer, 75, 81, 98, 255);
+					SDL_RenderFillRect(pRenderer, &r);
+				}
+				r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
+
+			}
+			r.x=PADDING_HRZ;
+			r.y+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
+
+    	}
+    }
+    else{
+		for(k=0;k<nRow;k++){
 			for(m=0;m<nCol;m++){
 				if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
 					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
@@ -125,11 +169,8 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 			}
 			r.x=PADDING_HRZ;
 			r.y+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
-
-    	}
-    }
-    else{
-
-    }
-    SDL_RenderPresent(pRenderer);
+		}
+	}
+	SDL_RenderPresent(pRenderer);
 }
+    
