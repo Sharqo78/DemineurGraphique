@@ -76,6 +76,9 @@ int main(int argc, char*argv[]) {
 			case SDL_MOUSEBUTTONUP:
 				pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
 				iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
+				if(iDisCell == GAME_OVER_VALUE){
+					app.iQuit=0;
+				}
 				sprintf(buf,"Clicked cell coordinates - Ligne: %03d Colonne: %03d - Cases découvertes %d", pCoord[0], pCoord[1], iDisCell);
 				SDL_SetWindowTitle(app.pWindow, buf);
 				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);

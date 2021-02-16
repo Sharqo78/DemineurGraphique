@@ -23,20 +23,20 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 	cellRow = yM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
 
 	if(xM>0 && yM>0 && yM<PLAYFIELD_HEIGHT && xM<PLAYFIELD_WIDTH){
-		mSetPlayed(pS[cellRow+cellCol*nRow]);
+			pCoord[0]=cellRow;
+			pCoord[1]=cellCol;
+			return pCoord;
+			free(pCoord);
+			pCoord=NULL;
 	}
 
-	pCoord[0]=cellRow;
-	pCoord[1]=cellCol;
-	return pCoord;
-	free(pCoord);
-	pCoord=NULL;
+
 }
 
 ///
 int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
 	int k,m;
-	int cnt;
+	int cnt=0;
     //Si la cellule a déjà été jouée, on retourne 0
     if(mIsPlayed(pS[x+(y*nRow)]))return 0;
     mSetPlayed(pS[x+(y*nRow)]);
@@ -52,7 +52,7 @@ int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
 	       }
 	     }
     }
-    return x;
+    return cnt;
 
 }
 
