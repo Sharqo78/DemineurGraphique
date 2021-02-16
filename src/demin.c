@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <strings.h>
 
 #include "defines.h"
 #include "demin.h"
@@ -29,8 +30,6 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 			free(pCoord);
 			pCoord=NULL;
 	}
-
-
 }
 
 ///
@@ -175,4 +174,3 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 	}
 	SDL_RenderPresent(pRenderer);
 }
-    

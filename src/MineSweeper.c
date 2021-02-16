@@ -18,11 +18,16 @@
 #include "demin.h"
 
 struct s_app{
-	Uint32			uStatus;
-	SDL_Window		*pWindow;
-	SDL_Renderer	*pRenderer;
-	SDL_Event	 	sEvent;
-	int				iQuit;
+	Uint32				uStatus;
+	SDL_Window		*	pWindow;
+	SDL_Renderer	*	pRenderer;
+	SDL_Event	 		sEvent;
+	int					iQuit;
+	TTF_Font		*	pFont;
+	SDL_Surface		*	pSurface;
+	SDL_Rect			surfaceRect;
+	SDL_Texture		*	pTexture;
+	SDL_Color			colorText; 
 } app;
 
 int main(int argc, char*argv[]) {
@@ -33,8 +38,21 @@ int main(int argc, char*argv[]) {
 	char buf[256];
 	int* pCoord;
 	int iDisCell;
+	int iTotalDisCell = 0;
 	int nbMines = (SCENE_NB_COL*SCENE_NB_PERCENT*SCENE_NB_ROW)/100;
-	SDL_Init(SDL_INIT_VIDEO);
+	if(SDL_Init(SDL_INIT_VIDEO)==-1){
+		fprintf(stderr, "SDL2 Initialization failed: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
+
+	/*app.pFont = TTF_OpenFont("arial.ttf", SCENE_CELL_SIZE);
+
+	if(app.pFont == NULL){
+		printf("TTF font initialization failed %s\n", TTF_GetError());
+		TTF_Quit();
+		SDL_Quit();
+		exit(EXIT_FAILURE);
+	}*/
 
 	app.pWindow=SDL_CreateWindow(
 			"MineSweeper",
@@ -78,14 +96,34 @@ int main(int argc, char*argv[]) {
 			case SDL_MOUSEBUTTONUP:
 				pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
 				iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
-				if(iDisCell == GAME_OVER_VALUE){
-					 DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
-					 SDL_Delay(5000);
-					 app.iQuit=0;
-				}
+				iTotalDisCell += iDisCell;
 				sprintf(buf,"Clicked cell coordinates - Ligne: %03d Colonne: %03d - Cases découvertes %d", pCoord[0], pCoord[1], iDisCell);
 				SDL_SetWindowTitle(app.pWindow, buf);
 				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
+				//Procédure en cas de "Game Over"
+				if(iDisCell == GAME_OVER_VALUE){
+					 DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
+					 /*app.colorText.r = 255;
+					 app.colorText.g = 255;
+					 app.colorText.b = 255;
+					 app.colorText.a = 255;
+					 app.pSurface = TTF_RenderText_Blended(app.pFont, "GAME OVER", app.colorText);
+					 app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
+
+					 app.surfaceRect.w = WINDOW_WIDTH;
+					 app.surfaceRect.x = 0;
+					 app.surfaceRect.h = SCENE_CELL_SIZE;
+					 app.surfaceRect.y = WINDOW_HEIGHT/2;
+
+					 SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
+					 SDL_DestroyTexture(app.pTexture);
+					 SDL_FreeSurface(app.pSurface);
+
+					 SDL_RenderPresent(app.pRenderer);*/
+
+					 SDL_Delay(2500);
+					 app.iQuit=0;
+				}
 				//AppDraw(pRenderer, &nStatus);
 				break;
 			case SDL_WINDOWEVENT:
@@ -124,6 +162,7 @@ int main(int argc, char*argv[]) {
 		}
 	}
 
+		TTF_CloseFont(app.pFont);
 		free(pCoord);
 		pCoord=NULL;
 		free(pScene);
