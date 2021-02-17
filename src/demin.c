@@ -11,6 +11,10 @@
 //Cette fonction gère les coordonnées des cases
 //Elle prend l'évènement pour interpréter les clics de souris et repère l'endroit du clic
 //Elle retourne un tableau de pointeurs contenant les coordonnés X et Y des cases
+//Si on sort des limites de la scène de jeu, elle retourne le nombre de cellules + 1 
+//Valeur non utilisée par la génération du champ de jeu.
+
+//J'ai du ressortir à cette combine car ça ne retournait rien quand j'étais pas dans les limites et ça faisait planter le jeu.
 int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 	int *pCoord;
 	int xM, yM;
@@ -23,7 +27,7 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 	cellCol = xM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
 	cellRow = yM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
 
-	if(xM>0 && yM>0 && yM<PLAYFIELD_HEIGHT && xM<PLAYFIELD_WIDTH){
+	if((xM>0) && (yM>0) && (yM<PLAYFIELD_HEIGHT) && (xM<PLAYFIELD_WIDTH)){
 			pCoord[0]=cellRow;
 			pCoord[1]=cellCol;
 			return pCoord;
@@ -31,14 +35,16 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 			pCoord=NULL;
 	}
 	else{
-		pCoord[0]=SCENE_NB_COL*SCENE_NB_ROW+1;
+		pCoord[0]=SCENE_NB_CELLS+1;
+		pCoord[1]=0;
 		return pCoord;
 		free(pCoord);
 		pCoord=NULL;
 	}
 }
 
-///
+
+//Cette fonction est un clair copié-collé du démineur terminal
 int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
 	int k,m;
 	int cnt=0;

@@ -13,6 +13,7 @@
 #include <SDL2/SDL.h> //J'ai pu remarquer que peu importe l'OS, l'include avec un / fonctionne (peut-être grâce à MinGW qui sait)
 #include <SDL2/SDL_ttf.h>
 #include <time.h>
+#include <string.h>
 
 #include "defines.h"
 #include "demin.h"
@@ -40,6 +41,10 @@ int main(int argc, char*argv[]) {
 	int iDisCell;
 	int iTotalDisCell = 0;
 	int nbMines = (SCENE_NB_COL*SCENE_NB_PERCENT*SCENE_NB_ROW)/100;
+	char gameOverText[] = "GAME OVER";
+	char youWinText[] = "YOU WON !";
+	int win = 1; //Permet de définir si l'OS sur lequel le programme est lancé est windows ou linux (j'ai des soucis concernant le chemin relatif des polices)
+
 	if(SDL_Init(SDL_INIT_VIDEO)==-1){
 		fprintf(stderr, "SDL2 Initialization failed: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
@@ -72,7 +77,8 @@ int main(int argc, char*argv[]) {
 	//Initialisation et affectation de la police d'écriture
 	//La condition prévoit de fermer le programme en cas d'erreur.
 	TTF_Init();
-	app.pFont = TTF_OpenFont("/home/salim/git/DemineurGraphique/Debug/arial.ttf", SCENE_CELL_SIZE);
+	if(win) app.pFont = TTF_OpenFont("C:\\Users\\Salim\\git\\DemineurGraphique\\Debug\\arial.ttf", SCENE_CELL_SIZE);
+	else app.pFont = TTF_OpenFont("/home/salim/git/DemineurGraphique/Debug/arial.ttf", SCENE_CELL_SIZE);
 
 	if(app.pFont == NULL){
 		printf("TTF_Openfont() : %s\n", TTF_GetError());
@@ -102,46 +108,48 @@ int main(int argc, char*argv[]) {
 				pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
 				iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
 				iTotalDisCell += iDisCell;
-				sprintf(buf,"Clicked cell coordinates - Ligne: %03d Colonne: %03d - Cases découvertes %d", pCoord[0], pCoord[1], iDisCell);
-				SDL_SetWindowTitle(app.pWindow, buf);
+				if(pCoord[0]==SCENE_NB_CELLS+1){
+					sprintf(buf,"Clicked cell coordinates - You're out of the playfield - Discovered cells %d", pCoord[0], pCoord[1], iDisCell);
+					SDL_SetWindowTitle(app.pWindow, buf);
+				}
+				else if( (pCoord[0]<SCENE_NB_ROW) && (pCoord[1]<SCENE_NB_COL) ){
+					sprintf(buf,"Clicked cell coordinates - Row: %03d Column: %03d - Discovered cells %d", pCoord[0], pCoord[1], iDisCell);
+					SDL_SetWindowTitle(app.pWindow, buf);
+				}
 				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
-				//Procédure en cas de "Game Over"
-				if(iDisCell == GAME_OVER_VALUE){
-					 DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
+				
 					 app.colorText.r = 255;
 					 app.colorText.g = 255;
 					 app.colorText.b = 255;
 					 app.colorText.a = 255;
-					 app.pSurface = TTF_RenderText_Blended(app.pFont, "GAME OVER", app.colorText);
-					 app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
-
-					 app.surfaceRect.w = WINDOW_WIDTH;
-					 app.surfaceRect.x = 0;
+					 app.surfaceRect.w = (SCENE_CELL_SIZE)*(strlen(gameOverText)/2);
+					 app.surfaceRect.x = PADDING_HRZ;
 					 app.surfaceRect.h = SCENE_CELL_SIZE;
-					 app.surfaceRect.y = WINDOW_HEIGHT/2;
+					 app.surfaceRect.y = 0;
 
-					 SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
-					 SDL_DestroyTexture(app.pTexture);
-					 SDL_FreeSurface(app.pSurface);
+				if(iDisCell == GAME_OVER_VALUE){
+					//Procédure en cas de Game Over
 
-					 SDL_RenderPresent(app.pRenderer);
+					app.pSurface = TTF_RenderText_Blended(app.pFont, gameOverText , app.colorText);
+					app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
+
+					DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
+					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
+					SDL_DestroyTexture(app.pTexture);
+					SDL_FreeSurface(app.pSurface);
+
+					SDL_RenderPresent(app.pRenderer);
 
 					 SDL_Delay(2500);
 					 app.iQuit=0;
 				}
 				else if (iTotalDisCell==(SCENE_NB_COL*SCENE_NB_ROW)-nbMines){
-					app.colorText.r = 255;
-					app.colorText.g = 255;
-					app.colorText.b = 255;
-					app.colorText.a = 255;
-					app.pSurface = TTF_RenderText_Blended(app.pFont, "You WIN", app.colorText);
+					//Procédure en cas de win
+
+					app.pSurface = TTF_RenderText_Blended(app.pFont, youWinText , app.colorText);
 					app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
+
 					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0);
-					app.surfaceRect.w = WINDOW_WIDTH;
-					app.surfaceRect.x = 0;
-					app.surfaceRect.h = SCENE_CELL_SIZE;
-					app.surfaceRect.y = WINDOW_HEIGHT/2;
-					
 					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
 					SDL_DestroyTexture(app.pTexture);
 					SDL_FreeSurface(app.pSurface);
