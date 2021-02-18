@@ -81,7 +81,9 @@ int main(int argc, char*argv[]) {
 		fprintf(stderr,"Couldn't initialize SDL_ttf %s\n", TTF_GetError());
 		return EXIT_FAILURE;
 	}
-
+	
+	app.pFont = TTF_OpenFont("arial.ttf", SCENE_CELL_SIZE);
+	
 	if(app.pFont == NULL){
 		printf("TTF_Openfont() : %s\n", TTF_GetError());
 		TTF_Quit();
