@@ -1,11 +1,12 @@
 /*
- ===============================================================================================
+ ===========================================================================================================
  Name        : deminGraph.c
  Author      : EL BAKRAOUI Salim
  Version     : 0.2prePrePreAlphaAlpha
  Copyright   : Aucun copyright, par contre ça veut pas dire qu'il faut plagier mon boulot
  Description : Portage de notre demineur en terminal vers un demineur graphique
- ===============================================================================================
+ Notes 		: il faut exécuter le programme à la main pour que la police s'ouvre correctement !
+ ===========================================================================================================
  */
 
 #include <stdio.h>
@@ -43,7 +44,6 @@ int main(int argc, char*argv[]) {
 	int nbMines = (SCENE_NB_COL*SCENE_NB_PERCENT*SCENE_NB_ROW)/100;
 	char gameOverText[] = "GAME OVER";
 	char youWinText[] = "YOU WON !";
-	int win = 1; //Permet de définir si l'OS sur lequel le programme est lancé est windows ou linux (j'ai des soucis concernant le chemin relatif des polices)
 
 	if(SDL_Init(SDL_INIT_VIDEO)==-1){
 		fprintf(stderr, "SDL2 Initialization failed: %s\n", SDL_GetError());
@@ -77,8 +77,10 @@ int main(int argc, char*argv[]) {
 	//Initialisation et affectation de la police d'écriture
 	//La condition prévoit de fermer le programme en cas d'erreur.
 	TTF_Init();
-	if(win) app.pFont = TTF_OpenFont("C:\\Users\\Salim\\git\\DemineurGraphique\\Debug\\arial.ttf", SCENE_CELL_SIZE);
-	else app.pFont = TTF_OpenFont("/home/salim/git/DemineurGraphique/Debug/arial.ttf", SCENE_CELL_SIZE);
+	if( (!TTF_WasInit()) && (TTF_Init()==-1) ){
+		fprintf(stderr,"Couldn't initialize SDL_ttf %s\n", TTF_GetError());
+		return EXIT_FAILURE;
+	}
 
 	if(app.pFont == NULL){
 		printf("TTF_Openfont() : %s\n", TTF_GetError());
