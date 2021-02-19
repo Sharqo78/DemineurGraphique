@@ -5,7 +5,7 @@
  Version     : 0.2prePrePreAlphaAlpha
  Copyright   : Aucun copyright, par contre ça veut pas dire qu'il faut plagier mon boulot
  Description : Portage de notre demineur en terminal vers un demineur graphique
- Notes 		: il faut exécuter le programme à la main pour que la police s'ouvre correctement !
+ Notes 		 : il faut exécuter le programme à la main pour que la police s'ouvre correctement !
 ===========================================================================================================
  */
 
