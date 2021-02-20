@@ -10,23 +10,28 @@
 
 //Cette fonction permet de savoir si on est sur une case ou non.
 //Valeur retournée en cas de réussite -> 1 
-//Valeur
+//Valeur retournéee en cas d'échec -> 0
 int AppIsMouseOnCell(int xM, int yM, int nRow, int nCol){
 	int k,m;
+
+	//On boucle sur le champ de jeu vertical
 	for(k=PADDING_TOP;k<(nRow*SCENE_CELL_BLOCK);k+=SCENE_CELL_BLOCK){
+		//Puis sur le champ de jeu horizontal
 		for(m=PADDING_HRZ;m<(nCol*SCENE_CELL_BLOCK);m+=SCENE_CELL_BLOCK){
+			//On vérifie si on est en dehors des cellules 
 			if( ((xM<m) && (yM<k+SCENE_CELL_BLOCK)) || ((xM<m+SCENE_CELL_BLOCK) && (yM<k)) )return 0;
 			else if( (xM<m+SCENE_CELL_SIZE) && (yM<(k+SCENE_CELL_SIZE)) )return 1;
 		}
 	}
 }
 
-//Cette fonction gère les coordonnées des cases
-//Elle prend l'évènement pour interpréter les clics de souris et repère l'endroit du clic
-//Elle retourne un tableau de pointeurs contenant les coordonnés X et Y des cases
-//Si on sort des limites de la scène de jeu, elle retourne le nombre de cellules + 1 
-//Valeur non utilisée par la génération du champ de jeu.
-//J'ai du ressortir à cette combine car ça ne retournait rien quand j'étais pas dans les limites et ça faisait planter le jeu.
+/*Cette fonction gère les coordonnées des cases
+Elle prend l'évènement pour interpréter les clics de souris et repère l'endroit du clic
+Elle retourne un tableau de pointeurs contenant les coordonnés X et Y des cases
+Si on sort des limites de la scène de jeu, elle retourne le nombre de cellules + 1 
+Valeur non utilisée par la génération du champ de jeu.
+J'ai du ressortir à cette combine car ça ne retournait rien quand j'étais pas dans les limites et ça faisait planter le jeu.*/
+
 int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 	int *pCoord;
 	int xM, yM;
@@ -117,7 +122,7 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
 //Cette fonction sert à tracer la scène de jeu.
 //mode 1 = mode de jeu
 //mode 0 = mode découvert
-void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mode){
+void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mode, TTF_Font *pFont){
     SDL_Rect r = {};
     int k,m;
     r.w = SCENE_CELL_SIZE;
@@ -134,14 +139,17 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 					if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
 						SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
 						SDL_RenderFillRect(pRenderer, &r);
+						DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 					}
 					else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
 						SDL_SetRenderDrawColor(pRenderer, 64, 69, 82, 255);
 						SDL_RenderFillRect(pRenderer, &r);
+						//DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 					}
 					else{
 						SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, pS[k+m*nRow]*26);
 						SDL_RenderFillRect(pRenderer, &r);
+						DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 					}
 				}
 				else{
@@ -162,6 +170,7 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 				if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
 					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
 					SDL_RenderFillRect(pRenderer, &r);
+					DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 				}
 				else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
 					SDL_SetRenderDrawColor(pRenderer, 64, 69, 82, 255);
@@ -170,6 +179,7 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 				else{
 					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, pS[k+m*nRow]*26);
 					SDL_RenderFillRect(pRenderer, &r);
+					DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 				}
 				r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
 			}
@@ -178,4 +188,52 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 		}
 	}
 	SDL_RenderPresent(pRenderer);
+}
+
+void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font *pFont){
+	SDL_Surface 	*pSurfaceNb;
+	SDL_Texture 	*pTextureNb;
+
+	SDL_Surface		*pSurfaceMine;
+	SDL_Texture		*pTextureMine;
+
+	SDL_Color		col = {255,255,255,255};
+
+	SDL_Rect		rect;
+
+	char buf[256] = "";
+
+
+
+	if(number==CELL_MINE){
+		pSurfaceMine = SDL_LoadBMP("mine.bmp");
+		//SDL_SetColorKey(pSurfaceMine, 1, SDL_MapRGB(pSurfaceMine->format, 0,0,255));
+		pTextureMine = SDL_CreateTextureFromSurface(pRenderer, pSurfaceMine);
+
+		rect.x = x;
+		rect.y = y;
+		rect.w = SCENE_CELL_SIZE;
+		rect.h = SCENE_CELL_SIZE;
+
+		SDL_RenderCopy(pRenderer, pTextureMine, NULL, &rect);
+		SDL_DestroyTexture(pTextureMine);
+		SDL_FreeSurface(pSurfaceMine);
+	}
+	
+	else{
+		if(number==CELL_VOID)sprintf(buf, " ");
+		else sprintf(buf,"%d",number);
+
+		pSurfaceNb = TTF_RenderText_Blended(pFont, buf , col);
+		pTextureNb = SDL_CreateTextureFromSurface(pRenderer, pSurfaceNb);
+
+		rect.x = x+(SCENE_CELL_SIZE/5);
+		rect.y = y;
+		rect.w = pSurfaceNb->w;
+		rect.h = pSurfaceNb->h;
+
+		SDL_RenderCopy(pRenderer, pTextureNb, NULL, &rect);
+		SDL_DestroyTexture(pTextureNb);
+		SDL_FreeSurface(pSurfaceNb);
+	}
 }

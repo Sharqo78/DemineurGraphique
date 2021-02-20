@@ -99,7 +99,7 @@ int main(int argc, char*argv[]) {
 	DeminSceneInit(pScene, SCENE_NB_ROW, SCENE_NB_COL, SCENE_NB_PERCENT);
 
 	//Traçage de la scène de jeu.
-	DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
+	DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1, app.pFont);
 	SDL_Delay(15);
 
 	SDL_RenderPresent(app.pRenderer);
@@ -115,17 +115,17 @@ int main(int argc, char*argv[]) {
 				if(pCoord[0]==SCENE_NB_CELLS+1){
 					iDisCell+=0;
 					iTotalDisCell+=iDisCell;
-					sprintf(buf,"MineSweeper Salim - You're not on a cell", pCoord[0], pCoord[1]);
+					sprintf(buf,"You're not on a cell", pCoord[0], pCoord[1]);
 					SDL_SetWindowTitle(app.pWindow, buf);
 				}
 				else if( (pCoord[0]<SCENE_NB_ROW) && (pCoord[1]<SCENE_NB_COL) ){
 					iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
 					iTotalDisCell += iDisCell;
-					sprintf(buf,"MineSweeper Salim - Row: %03d Column: %03d - Discovered cells %d", pCoord[0], pCoord[1], iTotalDisCell);
+					sprintf(buf,"Row: %03d Column: %03d - Discovered cells %d", pCoord[0], pCoord[1], iTotalDisCell);
 					SDL_SetWindowTitle(app.pWindow, buf);
 				}
 
-				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1);
+				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1, app.pFont);
 				app.colorText.r = 255;
 				app.colorText.g = 255;
 				app.colorText.b = 255;
@@ -143,7 +143,7 @@ int main(int argc, char*argv[]) {
 					app.surfaceRect.w = app.pSurface->w;
 					app.surfaceRect.h = app.pSurface->h;
 
-					DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0);
+					DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0, app.pFont);
 					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
 					SDL_DestroyTexture(app.pTexture);
 					SDL_FreeSurface(app.pSurface);
@@ -164,7 +164,7 @@ int main(int argc, char*argv[]) {
 					app.surfaceRect.w = app.pSurface->w;
 					app.surfaceRect.h = app.pSurface->h;
 
-					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0);
+					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0, app.pFont);
 					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
 					SDL_DestroyTexture(app.pTexture);
 					SDL_FreeSurface(app.pSurface);
