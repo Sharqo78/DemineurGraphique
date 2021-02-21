@@ -27,7 +27,7 @@
 #define PADDING_HRZ             (16)
 
 #define SCENE_CELL_SPACING      (4)
-#define SCENE_CELL_SIZE         (90)
+#define SCENE_CELL_SIZE         (64)
 #define SCENE_CELL_BLOCK        (SCENE_CELL_SIZE+SCENE_CELL_SPACING)
 
 #define GAME_OVER_VALUE         (-5)
