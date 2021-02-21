@@ -119,6 +119,12 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
 
 }
 
+struct colors{
+	SDL_Color		Bg;
+	SDL_Color		Hidden;
+	SDL_Color		Mine; //Les cases adjacentes ont les mêmes couleurs que les mines, seulement, elles on un niveau alpha qui varie selon le chiffre.
+	SDL_Color		Void;
+}color;
 //Cette fonction sert à tracer la scène de jeu.
 //mode 1 = mode de jeu
 //mode 0 = mode découvert
@@ -129,31 +135,36 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
     r.h = SCENE_CELL_SIZE;
     r.x=PADDING_HRZ;
     r.y=PADDING_TOP;
-	SDL_SetRenderDrawColor(pRenderer, 56, 60, 74, 255);
+
+	mToColor(color.Bg, SCENE_COLOR_BACKGROUND);
+	mToColor(color.Mine, SCENE_COLOR_MINE);
+	mToColor(color.Hidden, SCENE_COLOR_HIDDEN);
+	mToColor(color.Void, SCENE_COLOR_VOID);
+
+	SDL_SetRenderDrawColor(pRenderer, color.Bg.r, color.Bg.g, color.Bg.b, color.Bg.a);
 	SDL_RenderClear(pRenderer);
 	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
     if(mode){
         for(k=0;k<nRow;k++){
 			for(m=0;m<nCol;m++){
 				if(mIsPlayed(pS[k+m*nRow])){
-					if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
-						SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
+					if(mCellValue(pS[k+m*nRow])==CELL_MINE){
+						SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, color.Mine.a);
 						SDL_RenderFillRect(pRenderer, &r);
 						DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 					}
 					else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
-						SDL_SetRenderDrawColor(pRenderer, 64, 69, 82, 255);
+						SDL_SetRenderDrawColor(pRenderer, color.Void.r, color.Void.g, color.Void.b, color.Void.a);
 						SDL_RenderFillRect(pRenderer, &r);
-						//DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 					}
 					else{
-						SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, pS[k+m*nRow]*26);
+						SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, pS[k+m*nRow]*26);
 						SDL_RenderFillRect(pRenderer, &r);
 						DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 					}
 				}
 				else{
-					SDL_SetRenderDrawColor(pRenderer, 75, 81, 98, 255);
+					SDL_SetRenderDrawColor(pRenderer, color.Hidden.r, color.Hidden.g, color.Hidden.b, color.Hidden.a);
 					SDL_RenderFillRect(pRenderer, &r);
 				}
 				r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
@@ -168,16 +179,16 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 		for(k=0;k<nRow;k++){
 			for(m=0;m<nCol;m++){
 				if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
-					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, 255);
+					SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, color.Mine.a);
 					SDL_RenderFillRect(pRenderer, &r);
 					DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 				}
 				else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
-					SDL_SetRenderDrawColor(pRenderer, 64, 69, 82, 255);
+					SDL_SetRenderDrawColor(pRenderer, color.Void.r, color.Void.g, color.Void.b, color.Void.a);
 					SDL_RenderFillRect(pRenderer, &r);
 				}
 				else{
-					SDL_SetRenderDrawColor(pRenderer, 82, 148, 255, pS[k+m*nRow]*26);
+					SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, pS[k+m*nRow]*26);
 					SDL_RenderFillRect(pRenderer, &r);
 					DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
 				}
@@ -227,13 +238,35 @@ void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font
 		pSurfaceNb = TTF_RenderText_Blended(pFont, buf , col);
 		pTextureNb = SDL_CreateTextureFromSurface(pRenderer, pSurfaceNb);
 
-		rect.x = x+(SCENE_CELL_SIZE/5);
-		rect.y = y;
 		rect.w = pSurfaceNb->w;
 		rect.h = pSurfaceNb->h;
+		rect.x = x+(SCENE_CELL_SIZE/2)-(rect.w/2);
+		rect.y = y+(SCENE_CELL_SIZE/2)-(rect.h/2);
+
 
 		SDL_RenderCopy(pRenderer, pTextureNb, NULL, &rect);
 		SDL_DestroyTexture(pTextureNb);
 		SDL_FreeSurface(pSurfaceNb);
 	}
+}
+
+//Se charge d'écrire les messages qui seront visible dans la partie "Padding Top"
+void DeminDrawMessage(SDL_Renderer *pRenderer, TTF_Font *pFont, char *text){
+	SDL_Rect 		r;
+	SDL_Surface		*pSurfaceText;
+	SDL_Texture		*pTextureText;
+	SDL_Color 		col = {255,255,255,255};
+
+	pSurfaceText = TTF_RenderText_Blended(pFont, text, col);
+	pTextureText = SDL_CreateTextureFromSurface(pRenderer, pSurfaceText);
+
+	r.w = pSurfaceText->w;
+	r.h = pSurfaceText->h;
+
+	r.x = (WINDOW_WIDTH/2)-((pSurfaceText->w)/2);
+	r.y = 0;
+
+	SDL_RenderCopy(pRenderer, pTextureText, NULL, &r);
+	SDL_DestroyTexture(pTextureText);
+	SDL_FreeSurface(pSurfaceText);
 }

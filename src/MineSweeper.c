@@ -26,10 +26,10 @@ struct s_app{
 	SDL_Event	 		sEvent;
 	int					iQuit;
 	TTF_Font		*	pFont;
+	TTF_Font 		*	pFontMessage;
 	SDL_Surface		*	pSurface;
 	SDL_Rect			surfaceRect;
 	SDL_Texture		*	pTexture;
-	SDL_Color			colorText; 
 } app;
 
 int main(int argc, char*argv[]) {
@@ -83,13 +83,22 @@ int main(int argc, char*argv[]) {
 		return EXIT_FAILURE;
 	}
 	
-	app.pFont = TTF_OpenFont("arial.ttf", (PADDING_TOP-3) );
+	app.pFont = TTF_OpenFont("arial.ttf", (SCENE_CELL_SIZE-CELL_FONT_PADDING) );
 	
 	if(app.pFont == NULL){
-		printf("TTF_Openfont() : %s\n", TTF_GetError());
+		fprintf(stderr,"TTF_Openfont() : %s\n", TTF_GetError());
 		TTF_Quit();
 		SDL_Quit();
 		exit(EXIT_FAILURE);
+	}
+
+	app.pFontMessage = TTF_OpenFont("arial.ttf", (PADDING_TOP-CELL_FONT_PADDING));
+
+	if(app.pFontMessage == NULL){
+		fprintf(stderr, "TTF_OpenFont() : %s\n", TTF_GetError());
+		TTF_Quit();
+		SDL_Quit();
+		exit(EXIT_FAILURE);	
 	}
 
 	srand((unsigned int)time(NULL));
@@ -126,49 +135,23 @@ int main(int argc, char*argv[]) {
 				}
 
 				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1, app.pFont);
-				app.colorText.r = 255;
-				app.colorText.g = 255;
-				app.colorText.b = 255;
-				app.colorText.a = 255;
-
-				app.surfaceRect.x = PADDING_HRZ;
-				app.surfaceRect.y = 0;
 
 				if(iDisCell == GAME_OVER_VALUE){
 					//Procédure en cas de Game Over
 
-					app.pSurface = TTF_RenderText_Blended(app.pFont, gameOverText , app.colorText);
-					app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
-
-					app.surfaceRect.w = app.pSurface->w;
-					app.surfaceRect.h = app.pSurface->h;
-
-					DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 0, app.pFont);
-					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
-					SDL_DestroyTexture(app.pTexture);
-					SDL_FreeSurface(app.pSurface);
-
+					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0, app.pFont);
+					DeminDrawMessage(app.pRenderer, app.pFontMessage, gameOverText);
 
 					SDL_RenderPresent(app.pRenderer);
 
-					 SDL_Delay(2500);
-					 app.iQuit=0;
+					SDL_Delay(2500);
+					app.iQuit=0;
 				}
 
 				else if (iTotalDisCell==(SCENE_NB_COL*SCENE_NB_ROW)-nbMines){
 					//Procédure en cas de win
-
-					app.pSurface = TTF_RenderText_Blended(app.pFont, youWinText , app.colorText);
-					app.pTexture = SDL_CreateTextureFromSurface(app.pRenderer, app.pSurface);
-
-					app.surfaceRect.w = app.pSurface->w;
-					app.surfaceRect.h = app.pSurface->h;
-
 					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0, app.pFont);
-					SDL_RenderCopy(app.pRenderer, app.pTexture, NULL, &app.surfaceRect);
-					SDL_DestroyTexture(app.pTexture);
-					SDL_FreeSurface(app.pSurface);
-
+					DeminDrawMessage(app.pRenderer, app.pFontMessage, youWinText);
 					SDL_RenderPresent(app.pRenderer);
 
 					SDL_Delay(2500);
