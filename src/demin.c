@@ -39,7 +39,6 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 	int cellRow, cellCol;
 
 	if (!AppIsMouseOnCell(event->button.x,event->button.y, nRow, nCol))goto stop;
-
 	//On initialise le pointeur qui contiendra les coordonnées de la case cliquée.
 	pCoord = (int*)malloc(2*sizeof(int));
 
@@ -73,14 +72,13 @@ int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
 	int k,m;
 	int cnt=0;
 	//Si la cellule a déjà été jouée, on retourne 0
-	if( x==(SCENE_NB_CELLS+1) )return 0;
-	if(mIsPlayed(pS[x+(y*nRow)]))return 0;
+	if((mIsPlayed(pS[x+(y*nRow)])) || x==(SCENE_NB_CELLS+1) || mIsFlagged(pS[x+(y*nRow)]) )return 0;
 	mSetPlayed(pS[x+(y*nRow)]);
-	//Si la celllule est une mine, on² retourne -1 (partie terminée)
+	//Si la celllule est une mine, on retourne -1 (partie terminée)
 	if((mCellValue(pS[x+(y*nRow)])==CELL_MINE))return GAME_OVER_VALUE;
 	//Si la cellule n'est pas une mine mais qu'elle n'est pas nulle,
 	//on retourne 1, car on aura découvert qu'une case
-	if((mCellValue(pS[x+(y*nRow)])!=CELL_VOID))return 1;
+	if (mCellValue(pS[x+(y*nRow)])!=CELL_VOID)return 1;
 	if (mCellValue(pS[x+(y*nRow)])==CELL_VOID)cnt++;
 	for(k=-1;k<=1;k++){
 		for(m=-1;m<=1;m++){
@@ -92,6 +90,31 @@ int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
 	return cnt;
 }
 
+
+//Cette fonction sert à marquer une cellule :
+//Vous avez le choix entre un point d'interrogation (case suspectée) et un drapeau (case sûre)
+//mode 0 : drapeau
+//mode 1 : question
+void MarkCell(int *pS, int x, int y, int nRow, int nCol, int mode){
+	if(!mIsPlayed(pS[x+y*nRow])){
+		if(!mode){
+			if(mIsQuestion(pS[x+y*nRow])){
+				mClrQuestion(pS[x+y*nRow]);
+				mTglFlagged(pS[x+y*nRow]);
+			}
+			else mTglFlagged(pS[x+y*nRow]);
+		}
+		else{
+			if(mIsFlagged(pS[x+y*nRow])){
+				mClrFlagged(pS[x+y*nRow]);
+				mTglQuestion(pS[x+y*nRow]);
+			}
+			else mTglQuestion(pS[x+y*nRow]);
+		}
+	}
+}
+
+
 //Cette fonction sert à initier le tableau de jeu en mémoire 
 void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
     int k,m;
@@ -99,7 +122,7 @@ void DeminSceneInit(int *pS, int nRow, int nCol, int nPercent){
     int nbMines = (nRow*nCol*nPercent)/100;
 
     //Mise de toutes les valeurs à 0
-    for(k=0;k<(nCol*nRow);k++)pS[k]=0;
+    for(k=0;k<(nCol*nRow);k++)pS[k]=CELL_VOID;
     //Insertion des mines ainsi que des valeurs adjacentes permettant de détecter les mines
     do{
         k=rand()%nRow;
@@ -151,7 +174,7 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 					if(mCellValue(pS[k+m*nRow])==CELL_MINE){
 						SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, color.Mine.a);
 						SDL_RenderFillRect(pRenderer, &r);
-						DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
+						DeminDrawNumber(pS[k+m*nRow], pRenderer, r.x, r.y, pFont, mode);
 					}
 					else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
 						SDL_SetRenderDrawColor(pRenderer, color.Void.r, color.Void.g, color.Void.b, color.Void.a);
@@ -160,12 +183,13 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 					else{
 						SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, pS[k+m*nRow]*26);
 						SDL_RenderFillRect(pRenderer, &r);
-						DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
+						DeminDrawNumber(pS[k+m*nRow], pRenderer, r.x, r.y, pFont, mode);
 					}
 				}
 				else{
 					SDL_SetRenderDrawColor(pRenderer, color.Hidden.r, color.Hidden.g, color.Hidden.b, color.Hidden.a);
 					SDL_RenderFillRect(pRenderer, &r);
+					DeminDrawNumber(pS[k+m*nRow], pRenderer, r.x, r.y, pFont, mode);
 				}
 				r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
 
@@ -181,7 +205,7 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 				if(mCellValue(pS[k+m*nRow])>=CELL_MINE){
 					SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, color.Mine.a);
 					SDL_RenderFillRect(pRenderer, &r);
-					DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
+					DeminDrawNumber(pS[k+m*nRow], pRenderer, r.x, r.y, pFont, mode);
 				}
 				else if(mCellValue(pS[k+m*nRow])==CELL_VOID){
 					SDL_SetRenderDrawColor(pRenderer, color.Void.r, color.Void.g, color.Void.b, color.Void.a);
@@ -190,7 +214,7 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 				else{
 					SDL_SetRenderDrawColor(pRenderer, color.Mine.r, color.Mine.g, color.Mine.b, pS[k+m*nRow]*26);
 					SDL_RenderFillRect(pRenderer, &r);
-					DeminDrawNumber(mCellValue(pS[k+m*nRow]), pRenderer, r.x, r.y, pFont);
+					DeminDrawNumber(pS[k+m*nRow], pRenderer, r.x, r.y, pFont, mode);
 				}
 				r.x+=SCENE_CELL_SPACING+SCENE_CELL_SIZE;
 			}
@@ -201,7 +225,8 @@ void DeminSceneDraw(SDL_Renderer *pRenderer,int *pS, int nRow, int nCol, int mod
 	SDL_RenderPresent(pRenderer);
 }
 
-void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font *pFont){
+//Cette fonction se charge de tracer les nombres à l'intérieur de la case.
+void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font *pFont, int mode){
 	SDL_Surface 	*pSurfaceNb;
 	SDL_Texture 	*pTextureNb;
 
@@ -214,26 +239,42 @@ void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font
 
 	char buf[256] = "";
 
+	if( (!mode) || (mIsPlayed(number)) ){
+		if(mCellValue(number)==CELL_MINE){
+			pSurfaceMine = SDL_LoadBMP("mine.bmp");
+			pTextureMine = SDL_CreateTextureFromSurface(pRenderer, pSurfaceMine);
 
+			rect.x = x;
+			rect.y = y;
+			rect.w = SCENE_CELL_SIZE;
+			rect.h = SCENE_CELL_SIZE;
 
-	if(number==CELL_MINE){
-		pSurfaceMine = SDL_LoadBMP("mine.bmp");
-		//SDL_SetColorKey(pSurfaceMine, 1, SDL_MapRGB(pSurfaceMine->format, 0,0,255));
-		pTextureMine = SDL_CreateTextureFromSurface(pRenderer, pSurfaceMine);
+			SDL_RenderCopy(pRenderer, pTextureMine, NULL, &rect);
+			SDL_DestroyTexture(pTextureMine);
+			SDL_FreeSurface(pSurfaceMine);
+		}
+		
+		else{
+			if(mCellValue(number)==CELL_VOID)sprintf(buf, " ");
+			else sprintf(buf,"%d",mCellValue(number));
+		
+			pSurfaceNb = TTF_RenderText_Blended(pFont, buf , col);
+			pTextureNb = SDL_CreateTextureFromSurface(pRenderer, pSurfaceNb);
 
-		rect.x = x;
-		rect.y = y;
-		rect.w = SCENE_CELL_SIZE;
-		rect.h = SCENE_CELL_SIZE;
+			rect.w = pSurfaceNb->w;
+			rect.h = pSurfaceNb->h;
+			rect.x = x+(SCENE_CELL_SIZE/2)-(rect.w/2);
+			rect.y = y+(SCENE_CELL_SIZE/2)-(rect.h/2);
 
-		SDL_RenderCopy(pRenderer, pTextureMine, NULL, &rect);
-		SDL_DestroyTexture(pTextureMine);
-		SDL_FreeSurface(pSurfaceMine);
+			SDL_RenderCopy(pRenderer, pTextureNb, NULL, &rect);
+			SDL_DestroyTexture(pTextureNb);
+			SDL_FreeSurface(pSurfaceNb);
+		}
 	}
-	
 	else{
-		if(number==CELL_VOID)sprintf(buf, " ");
-		else sprintf(buf,"%d",number);
+		if(mIsFlagged(number))sprintf(buf,"F");
+		else if(mIsQuestion(number))sprintf(buf, "?");
+		else sprintf(buf, " ");
 
 		pSurfaceNb = TTF_RenderText_Blended(pFont, buf , col);
 		pTextureNb = SDL_CreateTextureFromSurface(pRenderer, pSurfaceNb);
@@ -242,7 +283,6 @@ void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font
 		rect.h = pSurfaceNb->h;
 		rect.x = x+(SCENE_CELL_SIZE/2)-(rect.w/2);
 		rect.y = y+(SCENE_CELL_SIZE/2)-(rect.h/2);
-
 
 		SDL_RenderCopy(pRenderer, pTextureNb, NULL, &rect);
 		SDL_DestroyTexture(pTextureNb);
@@ -269,4 +309,5 @@ void DeminDrawMessage(SDL_Renderer *pRenderer, TTF_Font *pFont, char *text){
 	SDL_RenderCopy(pRenderer, pTextureText, NULL, &r);
 	SDL_DestroyTexture(pTextureText);
 	SDL_FreeSurface(pSurfaceText);
+	SDL_RenderPresent(pRenderer);
 }

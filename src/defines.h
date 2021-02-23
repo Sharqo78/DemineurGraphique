@@ -32,12 +32,23 @@
 
 #define GAME_OVER_VALUE         (-5)
 
-#define cellValueMask       (0xFF)
-#define playedMask          (0x80000000)
-
+#define cellValueMask       (0x000000FF)
 #define mCellValue(c)       mBitsMsk(c, cellValueMask)
+
+#define playedMask          (0x80000000)
 #define mIsPlayed(c)        mIsBitSet(c,playedMask)
 #define mSetPlayed(c)       mBitsSet(c, playedMask)
+
+#define flaggedMask         (0x08000000)
+#define mIsFlagged(c)       mIsBitSet(c, flaggedMask)
+#define mTglFlagged(c)      mBitsTgl(c,flaggedMask)
+
+#define questionMask        (0x00008000)
+#define mIsQuestion(c)      mIsBitSet(c, questionMask)
+#define mTglQuestion(c)     mBitsTgl(c, questionMask)
+
+#define mClrFlagged(c)      mBitsClr(c, flaggedMask)
+#define mClrQuestion(c)     mBitsClr(c, questionMask)
 
 #define TESTING_WINDOW_WIDTH	(3*RECT_SPACING+2*RECT_WIDTH)
 #define TESTING_WINDOW_HEIGHT	(3*RECT_SPACING+2*RECT_HEIGHT)

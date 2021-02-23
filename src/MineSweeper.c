@@ -44,6 +44,7 @@ int main(int argc, char*argv[]) {
 	int nbMines = (SCENE_NB_COL*SCENE_NB_PERCENT*SCENE_NB_ROW)/100;
 	char gameOverText[] = "Game over.";
 	char youWinText[] = "You win !";
+	int isLCtrlPressed = 0;
 	int isOnCell;
 
 	if(SDL_Init(SDL_INIT_VIDEO)==-1){
@@ -119,19 +120,27 @@ int main(int argc, char*argv[]) {
 			case SDL_MOUSEMOTION:
 				break;
 			case SDL_MOUSEBUTTONUP:
-				pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
-
-				if(pCoord[0]==SCENE_NB_CELLS+1){
-					iDisCell+=0;
-					iTotalDisCell+=iDisCell;
-					sprintf(buf,"You're not on a cell", pCoord[0], pCoord[1]);
-					SDL_SetWindowTitle(app.pWindow, buf);
-				}
-				else if( (pCoord[0]<SCENE_NB_ROW) && (pCoord[1]<SCENE_NB_COL) ){
-					iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
-					iTotalDisCell += iDisCell;
-					sprintf(buf,"Row: %03d Column: %03d - Discovered cells %d", pCoord[0], pCoord[1], iTotalDisCell);
-					SDL_SetWindowTitle(app.pWindow, buf);
+				switch(app.sEvent.button.button){
+				case SDL_BUTTON_LEFT:
+					pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
+					if(pCoord[0]==SCENE_NB_CELLS+1){
+						iDisCell+=0;
+						iTotalDisCell+=iDisCell;
+						sprintf(buf,"You're not on a cell", pCoord[0], pCoord[1]);
+						SDL_SetWindowTitle(app.pWindow, buf);
+					}
+					else if( (pCoord[0]<SCENE_NB_ROW) && (pCoord[1]<SCENE_NB_COL) ){
+						iDisCell = DiscoverCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL);
+						iTotalDisCell += iDisCell;
+						sprintf(buf,"Row: %03d Column: %03d - Discovered cells %d", pCoord[0], pCoord[1], iTotalDisCell);
+						SDL_SetWindowTitle(app.pWindow, buf);
+					}
+				case SDL_BUTTON_RIGHT:
+					pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
+					MarkCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL, isLCtrlPressed);
+					break;
+				default:
+					break;
 				}
 
 				DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1, app.pFont);
@@ -142,8 +151,6 @@ int main(int argc, char*argv[]) {
 					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0, app.pFont);
 					DeminDrawMessage(app.pRenderer, app.pFontMessage, gameOverText);
 
-					SDL_RenderPresent(app.pRenderer);
-
 					SDL_Delay(2500);
 					app.iQuit=0;
 				}
@@ -152,7 +159,6 @@ int main(int argc, char*argv[]) {
 					//Procédure en cas de win
 					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 0, app.pFont);
 					DeminDrawMessage(app.pRenderer, app.pFontMessage, youWinText);
-					SDL_RenderPresent(app.pRenderer);
 
 					SDL_Delay(2500);
 					app.iQuit=0;
@@ -182,10 +188,23 @@ int main(int argc, char*argv[]) {
 					app.iQuit=0;
 					break;
 				case SDLK_SPACE:
-					//AppDraw(pRenderer, &nStatus);
+					pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
+					MarkCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL, 0);
+					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 1, app.pFont);
+					break;
+				case SDLK_LCTRL:
+						isLCtrlPressed = 0;
 				break;
 				default:
 					break;
+				}
+				break;
+			case SDL_KEYDOWN:
+				switch(app.sEvent.key.keysym.sym){
+					case SDLK_LCTRL:
+						isLCtrlPressed = 1;
+					default:
+						break;
 				}
 				break;
 			default:
@@ -195,6 +214,7 @@ int main(int argc, char*argv[]) {
 	}
 
 		TTF_CloseFont(app.pFont);
+		TTF_CloseFont(app.pFontMessage);
 		free(pCoord);
 		pCoord=NULL;
 		free(pScene);
