@@ -11,6 +11,7 @@
 //Cette fonction permet de savoir si on est sur une case ou non.
 //Valeur retournée en cas de réussite -> 1 
 //Valeur retournéee en cas d'échec -> 0
+
 int AppIsMouseOnCell(int xM, int yM, int nRow, int nCol){
 	int k,m;
 
@@ -32,15 +33,16 @@ Si on sort des limites de la scène de jeu, elle retourne le nombre de cellules 
 Valeur non utilisée par la génération du champ de jeu.
 J'ai du ressortir à cette combine car ça ne retournait rien quand j'étais pas dans les limites et ça faisait planter le jeu.*/
 
-int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
-	int *pCoord;
+void OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol, int *pCoord){
 	int xM, yM;
 	int k,m;
 	int cellRow, cellCol;
 
-	if (!AppIsMouseOnCell(event->button.x,event->button.y, nRow, nCol))goto stop;
-	//On initialise le pointeur qui contiendra les coordonnées de la case cliquée.
-	pCoord = (int*)malloc(2*sizeof(int));
+	//Si on est pas sur la case, on arrête.
+	if (!AppIsMouseOnCell(event->button.x,event->button.y, nRow, nCol)){
+		pCoord[0]=SCENE_NB_CELLS+1;
+		pCoord[1]=0;
+	}
 
 	//On ignore le padding horizontal et le padding de la bordure supérieure
 	xM = (event->button.x-PADDING_HRZ);
@@ -48,22 +50,16 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 
 	cellCol = xM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
 	cellRow = yM/(SCENE_CELL_SIZE+SCENE_CELL_SPACING);
-	
+
 	if( (xM>0) && (yM>0) && (yM<PLAYFIELD_HEIGHT) && (xM<PLAYFIELD_WIDTH) ){
 		pCoord[0]=cellRow;
 		pCoord[1]=cellCol;
-		return pCoord;
-		free(pCoord);
-		pCoord=NULL;
 	}
-	//J'avais envie d'essayer l'instruction goto
-	else goto stop;
-	stop:
+
+	else{
 		pCoord[0]=SCENE_NB_CELLS+1;
 		pCoord[1]=0;
-		return pCoord;
-		free(pCoord);
-		pCoord=NULL;
+	}
 }
 
 
@@ -71,9 +67,10 @@ int* OnClickCellCoordinates(SDL_Event*event, int* pS, int nRow, int nCol){
 int	DiscoverCell(int* pS, int x, int y, int nRow, int nCol){
 	int k,m;
 	int cnt=0;
-	//Si la cellule a déjà été jouée, on retourne 0
-	if((mIsPlayed(pS[x+(y*nRow)])) || x==(SCENE_NB_CELLS+1) || mIsFlagged(pS[x+(y*nRow)]) )return 0;
-	mSetPlayed(pS[x+(y*nRow)]);
+	//Si la cellule a déjà été jouée, qu'elle est la cellule "hors terrain" ou bien une cellule "flaguée", on retourne 0
+	if((mIsPlayed(pS[x+(y*nRow)])) || (x==(SCENE_NB_CELLS+1)) || (mIsFlagged(pS[x+(y*nRow)])) )return 0;
+
+    else mSetPlayed(pS[x+(y*nRow)]);
 	//Si la celllule est une mine, on retourne -1 (partie terminée)
 	if((mCellValue(pS[x+(y*nRow)])==CELL_MINE))return GAME_OVER_VALUE;
 	//Si la cellule n'est pas une mine mais qu'elle n'est pas nulle,
@@ -272,21 +269,35 @@ void DeminDrawNumber(int number, SDL_Renderer *pRenderer, int x, int y, TTF_Font
 		}
 	}
 	else{
-		if(mIsFlagged(number))sprintf(buf,"F");
-		else if(mIsQuestion(number))sprintf(buf, "?");
-		else sprintf(buf, " ");
+		if(mIsFlagged(number)){
+		    pSurfaceMine = SDL_LoadBMP("flag.bmp");
+			pTextureMine = SDL_CreateTextureFromSurface(pRenderer, pSurfaceMine);
 
-		pSurfaceNb = TTF_RenderText_Blended(pFont, buf , col);
-		pTextureNb = SDL_CreateTextureFromSurface(pRenderer, pSurfaceNb);
+			rect.x = x;
+			rect.y = y;
+			rect.w = SCENE_CELL_SIZE;
+			rect.h = SCENE_CELL_SIZE;
 
-		rect.w = pSurfaceNb->w;
-		rect.h = pSurfaceNb->h;
-		rect.x = x+(SCENE_CELL_SIZE/2)-(rect.w/2);
-		rect.y = y+(SCENE_CELL_SIZE/2)-(rect.h/2);
+			SDL_RenderCopy(pRenderer, pTextureMine, NULL, &rect);
+			SDL_DestroyTexture(pTextureMine);
+			SDL_FreeSurface(pSurfaceMine);
+		}
+		if(!mIsFlagged(number)){
+			if(mIsQuestion(number))sprintf(buf, "?");
+			else sprintf(buf, " ");
 
-		SDL_RenderCopy(pRenderer, pTextureNb, NULL, &rect);
-		SDL_DestroyTexture(pTextureNb);
-		SDL_FreeSurface(pSurfaceNb);
+			pSurfaceNb = TTF_RenderText_Blended(pFont, buf , col);
+			pTextureNb = SDL_CreateTextureFromSurface(pRenderer, pSurfaceNb);
+
+			rect.w = pSurfaceNb->w;
+			rect.h = pSurfaceNb->h;
+			rect.x = x+(SCENE_CELL_SIZE/2)-(rect.w/2);
+			rect.y = y+(SCENE_CELL_SIZE/2)-(rect.h/2);
+
+			SDL_RenderCopy(pRenderer, pTextureNb, NULL, &rect);
+			SDL_DestroyTexture(pTextureNb);
+			SDL_FreeSurface(pSurfaceNb);
+		}
 	}
 }
 

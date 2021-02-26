@@ -14,7 +14,7 @@
 
 #define SCENE_NB_ROW        (8)
 #define SCENE_NB_COL        (8)
-#define SCENE_NB_PERCENT    (15)
+#define SCENE_NB_PERCENT    (5)
 #define SCENE_NB_CELLS      (SCENE_NB_ROW*SCENE_NB_COL)
 
 #define CELL_FONT_PADDING   (4)
@@ -42,6 +42,7 @@
 #define flaggedMask         (0x08000000)
 #define mIsFlagged(c)       mIsBitSet(c, flaggedMask)
 #define mTglFlagged(c)      mBitsTgl(c,flaggedMask)
+#define mSetFlagged(c)      mBitsSet(c,flaggedMask)
 
 #define questionMask        (0x00008000)
 #define mIsQuestion(c)      mIsBitSet(c, questionMask)

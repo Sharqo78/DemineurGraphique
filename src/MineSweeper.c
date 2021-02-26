@@ -53,6 +53,7 @@ int main(int argc, char*argv[]) {
 	}
 
 
+
 	app.pWindow=SDL_CreateWindow(
 			"MineSweeper Salim",
 			SDL_WINDOWPOS_UNDEFINED,
@@ -104,9 +105,12 @@ int main(int argc, char*argv[]) {
 
 	srand((unsigned int)time(NULL));
 
-	//Initiation de la scène de jeu
+	//Initialisation de la scène de jeu
 	pScene = (int*)malloc((SCENE_NB_ROW*SCENE_NB_COL+1)*sizeof(int));
 	DeminSceneInit(pScene, SCENE_NB_ROW, SCENE_NB_COL, SCENE_NB_PERCENT);
+
+	//Initialisation de pCoord pour la fonction OnClickCellCoordinates()
+	pCoord = (int*)malloc(2*sizeof(int));
 
 	//Traçage de la scène de jeu.
 	DeminSceneDraw(app.pRenderer,pScene,SCENE_NB_ROW,SCENE_NB_COL, 1, app.pFont);
@@ -122,8 +126,8 @@ int main(int argc, char*argv[]) {
 			case SDL_MOUSEBUTTONUP:
 				switch(app.sEvent.button.button){
 				case SDL_BUTTON_LEFT:
-					pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
-					if(pCoord[0]==SCENE_NB_CELLS+1){
+					OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL, pCoord);
+					if(pCoord[0]>SCENE_NB_ROW){
 						iDisCell+=0;
 						iTotalDisCell+=iDisCell;
 						sprintf(buf,"You're not on a cell", pCoord[0], pCoord[1]);
@@ -135,8 +139,9 @@ int main(int argc, char*argv[]) {
 						sprintf(buf,"Row: %03d Column: %03d - Discovered cells %d", pCoord[0], pCoord[1], iTotalDisCell);
 						SDL_SetWindowTitle(app.pWindow, buf);
 					}
+					break;
 				case SDL_BUTTON_RIGHT:
-					pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
+					OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL, pCoord);
 					MarkCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL, isLCtrlPressed);
 					break;
 				default:
@@ -188,7 +193,7 @@ int main(int argc, char*argv[]) {
 					app.iQuit=0;
 					break;
 				case SDLK_SPACE:
-					pCoord = OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL);
+					OnClickCellCoordinates(&app.sEvent, pScene, SCENE_NB_ROW, SCENE_NB_COL, pCoord);
 					MarkCell(pScene, pCoord[0], pCoord[1], SCENE_NB_ROW, SCENE_NB_COL, 0);
 					DeminSceneDraw(app.pRenderer, pScene, SCENE_NB_ROW, SCENE_NB_COL, 1, app.pFont);
 					break;
@@ -222,6 +227,7 @@ int main(int argc, char*argv[]) {
 		SDL_DestroyRenderer(app.pRenderer);
 		SDL_DestroyWindow(app.pWindow);
 		SDL_Quit();
+		printf("[MineSweeper.c] Toutes les ressources ont été détruites, on peut évacuer\n");
 		return EXIT_SUCCESS;
 }
 
