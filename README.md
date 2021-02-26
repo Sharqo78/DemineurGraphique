@@ -11,7 +11,8 @@ J'ai pris le choix d'utiliser le thème de couleurs "Arc" (provenenant du thème
         - Faire en sorte que lorsqu'on clique au niveau des intersections, aucune case s'active. (réglé)
         - Ecrire les chiffres de chaque case (lorsqu'il y'a adjacence) (fait)
         - Possiblement essayer d'utiliser un bitmap pour la mine (fait)
-        - Ajouter le système de flags et interrogation sur une case potentiellement minée (à faire)
+        - Ajouter le système de flags et interrogation sur une case potentiellement minée (fait)
 
 ## Bugs
-        - Le drapeau s'enlève lorsqu'on fait un clic gauche sur la case
+        - Le drapeau s'enlève lorsqu'on fait un clic gauche sur la case (reglé):
+                Le problème venait de l'oubli d'un break dans la boucle de gestion des évènements SDL
